@@ -1,3 +1,87 @@
-* {
-    background-color: blueviolet;
+body{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f0f0f0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+                  "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+                  sans-serif;
+}
+.calculator-container{
+    display: flex;
+    flex-direction: column;
+    max-width: 400px;
+    width: 95%;
+    padding: 20px;
+    background-color: #333;
+    border-radius: 10px;
+}
+.display{
+    background-color: #222;
+    color: #fff;
+    font-size: 2.5em;
+    text-align: right;
+    word-break: break-all;
+    word-wrap: break-word;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    min-height: 80px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.buttons{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 8px;
+    width: 100%;
+}
+
+.buttons button{
+    height: 60px;
+    border:none;
+    border-radius: 5px;
+    background-color: #555;
+    color: white;
+    font-size: 1.5em;
+    cursor: pointer;
+}
+    
+.buttons button.number-button:hover,
+.buttons button.decimal-button:hover{
+    background-color: #666;
+}
+
+.buttons button.operator-button{
+    background-color: #ff9500;
+}
+.buttons button.operator-button:hover {
+    background-color: #e08500;
+}
+
+.buttons button.equals-button {
+    background-color: #28a745;
+}
+
+.buttons button.equals-button:hover {
+    background-color: #218838;
+}
+
+.buttons button.clear {
+    background-color: #d4d4d2;
+    color: black;
+}
+.buttons button.clear:hover {
+    background-color: #c0c0c0;
+}
+
+.buttons button:not(.zero){
+    flex-basis: calc(25% - 6px);
+    max-width: calc(25% - 6px);
+}
+.buttons button.zero{
+    flex-basis: calc(50% - 4px);
+    max-width: calc(50% - 4px);
 }
