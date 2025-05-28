@@ -3,6 +3,7 @@ let previousOperand = "";
 let currentOperand = "";
 let operator = "";
 let result = "";
+let shoudResetDisplay = false;
 
 const numberButtons = document.querySelectorAll('[data-number]');
 const previousOperandTextElement = document.querySelector('.previous-operand');
@@ -15,18 +16,22 @@ const clearButton = document.querySelector('.function-button-clear');
 
 function showResult(){
     result = operate(previousOperand, operator, currentOperand);
-    currentOperandTextElement.textContent = "";
-    currentOperand = "";
     currentOperandTextElement.textContent = result;
+    currentOperand = String(result);
+    previousOperand = "";
+    operator = "";
+    shoudResetDisplay = true;
 }
 
-function updateDisplay(){
-    previousOperand = currentOperand;
-    currentOperand = "";
-    currentOperandTextElement.textContent = "";
-};
 
 function appendInput(input){
+    if(shoudResetDisplay){
+        currentOperand = "";
+        shoudResetDisplay = false;
+    }
+    if(currentOperand.includes('.') && input === '.'){
+        return;
+    }
     currentOperand += input;
     currentOperandTextElement.textContent = currentOperand;
 };
@@ -70,8 +75,17 @@ numberButtons.forEach((button) => {
 
 operatorButtons.forEach((button) => {
     button.addEventListener("click", () => {
+        if(previousOperand !== "" && currentOperand !== ""){
+            let intermediateResult = operate(previousOperand, operator, currentOperand);
+            currentOperandTextElement.textContent = intermediateResult;
+            previousOperand = String(intermediateResult);
+        }
+        else{
+            previousOperand = currentOperand;
+        }
         operator = button.textContent;
-        updateDisplay();
+        currentOperand = "";
+        shoudResetDisplay = true;
     });
 });
 
