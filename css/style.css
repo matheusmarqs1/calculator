@@ -32,10 +32,6 @@ body{
     justify-content: center;
 }
 
-.previous-operand{
-    font-size: 1.2em;
-    font-weight: bold;
-}
 .current-operand{
     font-size: 1.2em;
     font-weight: bold;

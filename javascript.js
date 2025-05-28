@@ -6,22 +6,34 @@ let result = "";
 let shoudResetDisplay = false;
 
 const numberButtons = document.querySelectorAll('[data-number]');
-const previousOperandTextElement = document.querySelector('.previous-operand');
 const currentOperandTextElement = document.querySelector('.current-operand');
 const operatorButtons = document.querySelectorAll('[data-operator]');
 const equalsButton = document.querySelector('.equals-button');
 const decimalButton = document.querySelector('.decimal-button');
 const clearButton = document.querySelector('.function-button-clear');
 
+function roundDecimalNumber(number){
+    if(number.length > 15) return String(Number(number).toFixed(13)); 
+    else return number;
+};
 
 function showResult(){
     result = operate(previousOperand, operator, currentOperand);
+
+    if(typeof(result) === "string" && result.includes("LMAO")){
+        currentOperandTextElement.textContent = result;
+        clearDisplay();
+        shoudResetDisplay = true;
+        return;
+    }
+
+    result = roundDecimalNumber(String(result));
     currentOperandTextElement.textContent = result;
-    currentOperand = String(result);
+    currentOperand = result;
     previousOperand = "";
     operator = "";
     shoudResetDisplay = true;
-}
+};
 
 
 function appendInput(input){
@@ -39,8 +51,8 @@ function appendInput(input){
 function clearDisplay(){
     previousOperand = "";
     currentOperand = "";
-    currentOperandTextElement.textContent = "0";
-}
+    operator = "";
+};
 
 function operate(previousOperand, operator, currentOperand){
     
@@ -76,9 +88,19 @@ numberButtons.forEach((button) => {
 operatorButtons.forEach((button) => {
     button.addEventListener("click", () => {
         if(previousOperand !== "" && currentOperand !== ""){
+
             let intermediateResult = operate(previousOperand, operator, currentOperand);
+
+            if(typeof(intermediateResult) === "string" && intermediateResult.includes("LMAO")){
+                currentOperandTextElement.textContent = intermediateResult;
+                clearDisplay();
+                shoudResetDisplay = true;
+                return;
+            }
+
+            intermediateResult = roundDecimalNumber(String(intermediateResult));
             currentOperandTextElement.textContent = intermediateResult;
-            previousOperand = String(intermediateResult);
+            previousOperand = intermediateResult;
         }
         else{
             previousOperand = currentOperand;
@@ -93,8 +115,17 @@ decimalButton.addEventListener("click", () => {
     appendInput(decimalButton.textContent);
 });
 
-equalsButton.addEventListener("click", () => showResult());
+equalsButton.addEventListener("click", () => {
+    if(previousOperand !== "" && currentOperand !== "" && operator != "") showResult();
+    else return;
+});
 
-clearButton.addEventListener("click", () => clearDisplay());
+clearButton.addEventListener("click", () => {
+    clearDisplay();
+    currentOperandTextElement.textContent = "0";
+    
+});
 
 
+// arredondamento
+// digitar dois operadores seguidos
