@@ -1,45 +1,86 @@
 
-function add(number1, number2){
-    return number1 + number2;
+let previousOperand = "";
+let currentOperand = "";
+let operator = "";
+let result = "";
+
+const numberButtons = document.querySelectorAll('[data-number]');
+const previousOperandTextElement = document.querySelector('.previous-operand');
+const currentOperandTextElement = document.querySelector('.current-operand');
+const operatorButtons = document.querySelectorAll('[data-operator]');
+const equalsButton = document.querySelector('.equals-button');
+const decimalButton = document.querySelector('.decimal-button');
+const clearButton = document.querySelector('.function-button-clear');
+
+
+function showResult(){
+    result = operate(previousOperand, operator, currentOperand);
+    currentOperandTextElement.textContent = "";
+    currentOperand = "";
+    currentOperandTextElement.textContent = result;
+}
+
+function updateDisplay(){
+    previousOperand = currentOperand;
+    currentOperand = "";
+    currentOperandTextElement.textContent = "";
 };
 
-function subtract(number1, number2){
-    return number1 - number2;
+function appendInput(input){
+    currentOperand += input;
+    currentOperandTextElement.textContent = currentOperand;
 };
 
-function multiply(number1, number2){
-    return number1 * number2;
-};
+function clearDisplay(){
+    previousOperand = "";
+    currentOperand = "";
+    currentOperandTextElement.textContent = "0";
+}
 
-function divide(number1, number2){
-    return (number2 !== 0) ? number1 / number2 : "LMAO";
-};
-
-let number1 = Number(prompt("ENTER A NUMBER: "));
-let operator = prompt("ENTER AN OPERATOR: ");
-let number2 = Number(prompt("ENTER ANOTHER NUMBER: "))
-
-operate(number1, operator, number2);
-
-function operate(number1, operator, number2){
+function operate(previousOperand, operator, currentOperand){
+    
+    let number1 = Number(previousOperand);
+    let number2 = Number(currentOperand);
 
     switch (operator) {
         case "+":
-            alert(add(number1, number2));
-            break;
+            return number1 + number2;
+
         case "-":
-            alert(subtract(number1, number2));
-            break;
+            return number1 - number2;
+
         case "*":
-            alert(multiply(number1, number2));
-            break;
+            return number1 * number2;
+
         case "/":
-            alert(divide(number1, number2));
-            break;
+            return (number2 !== 0) ? number1 / number2 : "LMAO";
+            
         default:
-            alert("This operator is not present in the calculator!");
+            return "This operator is not present in the calculator!";
+
     };
 
 };
+
+numberButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+        appendInput(button.textContent);
+    });
+});
+
+operatorButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+        operator = button.textContent;
+        updateDisplay();
+    });
+});
+
+decimalButton.addEventListener("click", () => {
+    appendInput(decimalButton.textContent);
+});
+
+equalsButton.addEventListener("click", () => showResult());
+
+clearButton.addEventListener("click", () => clearDisplay());
 
 

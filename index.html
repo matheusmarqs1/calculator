@@ -6,13 +6,15 @@
     <title>Calculator</title>
     <meta name='viewport' content='width=device-width, initial-scale=1'>
     <link rel='stylesheet' href='css/style.css'>
-    <script src='javascript.js'></script>
 </head>
 <body>
     <div class="calculator-container">
-        <div class="display">7777</div>
+        <div class="display">
+            <div class="previous-operand"></div>
+            <div class="current-operand"></div>
+        </div>
         <div class="buttons">
-            <button data-all-clear class="function-button clear">AC</button>
+            <button data-all-clear class="function-button-clear">AC</button>
             <button data-sign class="function-button sign">+/-</button>
             <button data-percent class="percent-button">%</button>
             <button data-operator class="operator-button">/</button>
@@ -31,12 +33,13 @@
             <button data-number class="number-button">2</button>
             <button data-number class="number-button">3</button>
             <button data-operator class="operator-button">+</button>
-            
+
             <button data-number class="number-button zero">0</button>
             <button data-decimal class="decimal-button">.</button>
             <button data-equals class="equals-button">=</button>
         </div>
     </div>
 
+    <script src='javascript.js'></script>
 </body>
 </html>
