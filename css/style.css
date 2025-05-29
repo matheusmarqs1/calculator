@@ -29,12 +29,22 @@ body{
     min-height: 80px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: space-around;
+    align-items: flex-end;
 }
 
 .current-operand{
     font-size: 1.2em;
+    min-height: 20px;
     font-weight: bold;
+}
+
+.previous-operand{
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #fff;
+    min-height: 40px;
+    align-self: flex-start;
 }
 
 .buttons{

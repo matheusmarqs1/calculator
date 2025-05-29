@@ -7,10 +7,12 @@ let shoudResetDisplay = false;
 
 const numberButtons = document.querySelectorAll('[data-number]');
 const currentOperandTextElement = document.querySelector('.current-operand');
+const previousOperandTextElement = document.querySelector('.previous-operand');
 const operatorButtons = document.querySelectorAll('[data-operator]');
 const equalsButton = document.querySelector('.equals-button');
 const decimalButton = document.querySelector('.decimal-button');
 const clearButton = document.querySelector('.function-button-clear');
+const backspaceButton = document.querySelector('.backspace-button');
 
 function roundDecimalNumber(number){
     if(number.length > 15) return String(Number(number).toFixed(13)); 
@@ -20,19 +22,18 @@ function roundDecimalNumber(number){
 function showResult(){
     result = operate(previousOperand, operator, currentOperand);
 
-    if(typeof(result) === "string" && result.includes("LMAO")){
-        currentOperandTextElement.textContent = result;
-        clearDisplay();
-        shoudResetDisplay = true;
+    if(handleDivisionByZeroError(result)){
         return;
     }
 
     result = roundDecimalNumber(String(result));
-    currentOperandTextElement.textContent = result;
     currentOperand = result;
     previousOperand = "";
     operator = "";
     shoudResetDisplay = true;
+    updateDisplay();
+    
+    
 };
 
 
@@ -45,10 +46,10 @@ function appendInput(input){
         return;
     }
     currentOperand += input;
-    currentOperandTextElement.textContent = currentOperand;
+    updateDisplay(); /** currentOperandTextElement.textContent = currentOperand;*/
 };
 
-function clearDisplay(){
+function clearOperation(){
     previousOperand = "";
     currentOperand = "";
     operator = "";
@@ -79,6 +80,30 @@ function operate(previousOperand, operator, currentOperand){
 
 };
 
+function handleDivisionByZeroError(value){
+    if(typeof(value) === "string" && value.includes("LMAO")){
+        currentOperandTextElement.textContent = value;
+        clearOperation();
+        shoudResetDisplay = true;
+        return true;
+    }
+    return false;
+};
+
+function updateDisplay(){
+    currentOperandTextElement.textContent = (currentOperand !== "") ? currentOperand : "0";
+    
+    if(previousOperand !== "" && operator !== ""){
+        previousOperandTextElement.textContent = `${previousOperand} ${operator}`;
+    }
+    else if(previousOperand !== "" && operator === ""){
+        previousOperandTextElement.textContent = previousOperand;
+    }
+    else {
+        previousOperandTextElement.textContent = '';
+    }
+};
+
 numberButtons.forEach((button) => {
     button.addEventListener("click", () => {
         appendInput(button.textContent);
@@ -91,10 +116,7 @@ operatorButtons.forEach((button) => {
 
             let intermediateResult = operate(previousOperand, operator, currentOperand);
 
-            if(typeof(intermediateResult) === "string" && intermediateResult.includes("LMAO")){
-                currentOperandTextElement.textContent = intermediateResult;
-                clearDisplay();
-                shoudResetDisplay = true;
+            if(handleDivisionByZeroError(intermediateResult)){
                 return;
             }
 
@@ -102,12 +124,21 @@ operatorButtons.forEach((button) => {
             currentOperandTextElement.textContent = intermediateResult;
             previousOperand = intermediateResult;
         }
-        else{
+        else if(previousOperand !== "" && currentOperand === ""){
+            operator = button.textContent;
+            return;
+        }
+        
+        else if(currentOperand !== "" && previousOperand === ""){
             previousOperand = currentOperand;
+            currentOperand = "";
+        }
+        else{
+            return;
         }
         operator = button.textContent;
-        currentOperand = "";
         shoudResetDisplay = true;
+        updateDisplay();
     });
 });
 
@@ -121,11 +152,27 @@ equalsButton.addEventListener("click", () => {
 });
 
 clearButton.addEventListener("click", () => {
-    clearDisplay();
-    currentOperandTextElement.textContent = "0";
-    
+    clearOperation();
+    updateDisplay();
+});
+
+backspaceButton.addEventListener("click", () => {
+
+if(currentOperand !== ""){
+    currentOperand = currentOperand.slice(0, -1);
+}
+
+else if (operator !== ""){
+    operator = "";
+}
+
+else if(previousOperand !== ""){
+    previousOperand = previousOperand.slice(0,-1);
+}
+   updateDisplay();
 });
 
 
-// arredondamento
-// digitar dois operadores seguidos
+// rounding
+// improve UI
+
