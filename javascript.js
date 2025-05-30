@@ -16,38 +16,22 @@ const backspaceButton = document.querySelector('.backspace-button');
 const percentButton = document.querySelector('.percent-button');
 
 function roundDecimalNumber(number){
-    if(number.length > 15) return String(Number(number).toFixed(13)); 
-    else return number;
+    const factor = Math.pow(10, 9);
+    number = (Math.round(number * factor) / factor).toFixed(9).replace(/\.?0+$/g, '');
+    return number;
+
 };
-
-function showResult(){
-    result = operate(previousOperand, operator, currentOperand);
-
-    if(handleDivisionByZeroError(result)){
-        return;
-    }
-
-    result = roundDecimalNumber(String(result));
-    currentOperand = result;
-    previousOperand = "";
-    operator = "";
-    shoudResetDisplay = true;
-    updateDisplay();
-    
-    
-};
-
 
 function appendInput(input){
     if(shoudResetDisplay){
         currentOperand = "";
         shoudResetDisplay = false;
     }
-    if(currentOperand.includes('.') && input === '.'){
+    if((currentOperand.includes('.') || currentOperand === "") && input === '.'){
         return;
     }
     currentOperand += input;
-    updateDisplay(); /** currentOperandTextElement.textContent = currentOperand;*/
+    updateDisplay(); 
 };
 
 function clearOperation(){
@@ -91,6 +75,46 @@ function handleDivisionByZeroError(value){
     return false;
 };
 
+function deleteLastDigit(){
+    
+    if(currentOperand !== ""){
+        currentOperand = currentOperand.slice(0, -1);
+    }
+
+    else if (operator !== ""){
+        operator = "";
+    }
+
+    else if(previousOperand !== ""){
+        previousOperand = previousOperand.slice(0,-1);
+    }
+    updateDisplay();
+};
+
+function calculateResult(){
+    if(previousOperand !== "" && currentOperand !== "" && operator != ""){
+         
+        result = operate(previousOperand, operator, currentOperand);
+
+        if(handleDivisionByZeroError(result)){
+            return;
+        }
+
+        result = roundDecimalNumber(result);
+        currentOperand = result;
+        previousOperand = "";
+        operator = "";
+        shoudResetDisplay = true;
+        updateDisplay();
+    }
+    else return;
+};
+
+function clearAll(){
+    clearOperation();
+    updateDisplay();
+};
+
 function updateDisplay(){
     currentOperandTextElement.textContent = (currentOperand !== "") ? currentOperand : "0";
     
@@ -105,6 +129,37 @@ function updateDisplay(){
     }
 };
 
+function setOperator(newOperator){
+    if(previousOperand !== "" && currentOperand !== ""){
+
+        let intermediateResult = operate(previousOperand, operator, currentOperand);
+
+        if(handleDivisionByZeroError(intermediateResult)){
+            return;
+        }
+
+        intermediateResult = roundDecimalNumber(intermediateResult);
+        currentOperandTextElement.textContent = intermediateResult;
+        previousOperand = intermediateResult;
+    }
+    else if(previousOperand !== "" && currentOperand === ""){
+        operator = newOperator;
+        return;
+    }
+    
+    else if(currentOperand !== "" && previousOperand === ""){
+        previousOperand = currentOperand;
+        currentOperand = "";
+    }
+    else{
+        return;
+    }
+    operator = newOperator;
+    shoudResetDisplay = true;
+    updateDisplay();
+};
+
+
 numberButtons.forEach((button) => {
     button.addEventListener("click", () => {
         appendInput(button.textContent);
@@ -112,66 +167,18 @@ numberButtons.forEach((button) => {
 });
 
 operatorButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-        if(previousOperand !== "" && currentOperand !== ""){
-
-            let intermediateResult = operate(previousOperand, operator, currentOperand);
-
-            if(handleDivisionByZeroError(intermediateResult)){
-                return;
-            }
-
-            intermediateResult = roundDecimalNumber(String(intermediateResult));
-            currentOperandTextElement.textContent = intermediateResult;
-            previousOperand = intermediateResult;
-        }
-        else if(previousOperand !== "" && currentOperand === ""){
-            operator = button.textContent;
-            return;
-        }
-        
-        else if(currentOperand !== "" && previousOperand === ""){
-            previousOperand = currentOperand;
-            currentOperand = "";
-        }
-        else{
-            return;
-        }
-        operator = button.textContent;
-        shoudResetDisplay = true;
-        updateDisplay();
-    });
+    button.addEventListener("click", () => setOperator(button.textContent));
 });
 
 decimalButton.addEventListener("click", () => {
     appendInput(decimalButton.textContent);
 });
 
-equalsButton.addEventListener("click", () => {
-    if(previousOperand !== "" && currentOperand !== "" && operator != "") showResult();
-    else return;
-});
+equalsButton.addEventListener("click", () => calculateResult());
 
-clearButton.addEventListener("click", () => {
-    clearOperation();
-    updateDisplay();
-});
+clearButton.addEventListener("click", () => clearAll());
 
-backspaceButton.addEventListener("click", () => {
-
-if(currentOperand !== ""){
-    currentOperand = currentOperand.slice(0, -1);
-}
-
-else if (operator !== ""){
-    operator = "";
-}
-
-else if(previousOperand !== ""){
-    previousOperand = previousOperand.slice(0,-1);
-}
-   updateDisplay();
-});
+backspaceButton.addEventListener("click", () => deleteLastDigit());
 
 percentButton.addEventListener("click", () => {
 
@@ -205,7 +212,27 @@ percentButton.addEventListener("click", () => {
     updateDisplay();
 });
 
+document.addEventListener("keydown", (event) => {
+    console.log(event.key);
+    if(!isNaN(Number(event.key))){
+        appendInput(event.key);
+    }
+    else if(event.key === "Backspace"){
+        deleteLastDigit();
+    }
+    else if(event.key === "Enter"){
+        calculateResult();
+    }
+    else if(event.key === "."){
+        appendInput(event.key);
+    }
+    else if(event.key === "Delete"){
+        clearAll();
+    }
+    else if(event.key === "+" || event.key === "-" || event.key === "*" || event.key === "/"){
+        setOperator(event.key);
+    }
+});
+
 updateDisplay();
 // rounding
-// improve UI
-
