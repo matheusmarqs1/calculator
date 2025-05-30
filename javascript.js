@@ -13,6 +13,7 @@ const equalsButton = document.querySelector('.equals-button');
 const decimalButton = document.querySelector('.decimal-button');
 const clearButton = document.querySelector('.function-button-clear');
 const backspaceButton = document.querySelector('.backspace-button');
+const percentButton = document.querySelector('.percent-button');
 
 function roundDecimalNumber(number){
     if(number.length > 15) return String(Number(number).toFixed(13)); 
@@ -172,7 +173,39 @@ else if(previousOperand !== ""){
    updateDisplay();
 });
 
+percentButton.addEventListener("click", () => {
 
+    if(currentOperand === "" || isNaN(Number(currentOperand))) return;
+
+    currentOperand = Number(currentOperand);
+    previousOperand = Number(previousOperand);
+
+    if(operator === "" || isNaN(Number(previousOperand))){
+        currentOperand = String(currentOperand / 100);
+        previousOperand = "";
+        shoudResetDisplay = true;
+    }
+    else if(operator === "+" || operator === "-"){
+       currentOperand = (operator === "+") ? String(previousOperand + (((currentOperand) / 100) * previousOperand)) 
+            : String(previousOperand - (((currentOperand) / 100) * previousOperand));
+        
+        previousOperand = "";
+        operator = "";
+        shoudResetDisplay = true;
+    }
+    else if(operator === "*" || operator === "/"){
+        currentOperand = (operator === "*") ? String(previousOperand * (currentOperand / 100)) 
+            : String(previousOperand / (currentOperand / 100));
+        
+        previousOperand = "";
+        operator = "";
+        shoudResetDisplay = true;
+    }
+
+    updateDisplay();
+});
+
+updateDisplay();
 // rounding
 // improve UI
 
