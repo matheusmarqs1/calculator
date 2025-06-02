@@ -1,8 +1,9 @@
-
+// Variables to store the operands, operator and result of the calculator
 let previousOperand = "";
 let currentOperand = "";
 let operator = "";
 let result = "";
+// Flag to indicate whether the display should be cleared before adding the next number.
 let shoudResetDisplay = false;
 
 const numberButtons = document.querySelectorAll('[data-number]');
@@ -16,17 +17,25 @@ const backspaceButton = document.querySelector('.backspace-button');
 const percentButton = document.querySelector('.percent-button');
 
 function roundDecimalNumber(number){
-    const factor = Math.pow(10, 9);
-    number = (Math.round(number * factor) / factor).toFixed(9).replace(/\.?0+$/g, '');
+    const factor = Math.pow(10, 8);
+    number = (Math.round(number * factor) / factor).toFixed(8).replace(/\.?0+$/g, '');
     return number;
 
 };
 
 function appendInput(input){
+    // If the shoudResetDisplay flag is true, clear the display for a new calculation or operator
     if(shoudResetDisplay){
         currentOperand = "";
         shoudResetDisplay = false;
     }
+    // Prevents the user from typing multiple leading zeros or starting with a zero and another number
+    if(currentOperand === '0' && input !== '.'){
+        currentOperand = input;
+        updateDisplay();
+        return;
+    }
+    // Prevents adding multiple decimal points
     if((currentOperand.includes('.') || currentOperand === "") && input === '.'){
         return;
     }
@@ -76,15 +85,15 @@ function handleDivisionByZeroError(value){
 };
 
 function deleteLastDigit(){
-    
+    // Remove the last digit from the current operand, if any
     if(currentOperand !== ""){
         currentOperand = currentOperand.slice(0, -1);
     }
-
+    // If there is no current operand, remove the operator if there is one
     else if (operator !== ""){
         operator = "";
     }
-
+    // If there is no operator, remove the last digit of the previous operand
     else if(previousOperand !== ""){
         previousOperand = previousOperand.slice(0,-1);
     }
@@ -130,6 +139,8 @@ function updateDisplay(){
 };
 
 function setOperator(newOperator){
+    // If there is a pending calculation (previousOperand and currentOperand are filled),
+    // calculate the intermediate result before defining the new operator
     if(previousOperand !== "" && currentOperand !== ""){
 
         let intermediateResult = operate(previousOperand, operator, currentOperand);
@@ -142,15 +153,18 @@ function setOperator(newOperator){
         currentOperandTextElement.textContent = intermediateResult;
         previousOperand = intermediateResult;
     }
+    // If only the previous operand is filled, just update the operator
     else if(previousOperand !== "" && currentOperand === ""){
         operator = newOperator;
         return;
     }
-    
+    // If only the current operand is filled, move it to the previous operand
+    // and clear the current operand for the next entry
     else if(currentOperand !== "" && previousOperand === ""){
         previousOperand = currentOperand;
         currentOperand = "";
     }
+    // If both are empty, do nothing
     else{
         return;
     }
@@ -187,11 +201,14 @@ percentButton.addEventListener("click", () => {
     currentOperand = Number(currentOperand);
     previousOperand = Number(previousOperand);
 
+    // If there is no previous operator or operand, calculate the percentage of the current number
     if(operator === "" || isNaN(Number(previousOperand))){
         currentOperand = String(currentOperand / 100);
         previousOperand = "";
         shoudResetDisplay = true;
     }
+
+    // If operator is '+' or '-', calculate the percentage of previousOperand and add/subtract
     else if(operator === "+" || operator === "-"){
        currentOperand = (operator === "+") ? String(previousOperand + (((currentOperand) / 100) * previousOperand)) 
             : String(previousOperand - (((currentOperand) / 100) * previousOperand));
@@ -200,6 +217,8 @@ percentButton.addEventListener("click", () => {
         operator = "";
         shoudResetDisplay = true;
     }
+    
+    // If operator is '*' or '/', calculate the percentage of currentOperand and multiply/divide
     else if(operator === "*" || operator === "/"){
         currentOperand = (operator === "*") ? String(previousOperand * (currentOperand / 100)) 
             : String(previousOperand / (currentOperand / 100));
@@ -235,4 +254,4 @@ document.addEventListener("keydown", (event) => {
 });
 
 updateDisplay();
-// rounding
+
