@@ -17,9 +17,41 @@ const backspaceButton = document.querySelector('.backspace-button');
 const percentButton = document.querySelector('.percent-button');
 
 function roundDecimalNumber(number){
-    const factor = Math.pow(10, 8);
-    number = (Math.round(number * factor) / factor).toFixed(8).replace(/\.?0+$/g, '');
-    return number;
+
+    // Defines display limits and internal precision for calculations.
+    const MAX_DISPLAY_LENGTH = 16;
+    const MAX_DECIMAL_PLACES = 12;
+
+    // Handles extreme numbers: Very large (>= 10^16) or very small (e.g., < 10^-12).
+    // Formats them using exponential notation to fit the display.
+    if((Math.abs(number) >= Math.pow(10, MAX_DISPLAY_LENGTH)) || (Math.abs(number) > 0 && Math.abs(number) < Math.pow(10, -(MAX_DECIMAL_PLACES)))){
+        
+        let result = String(number.toExponential(MAX_DECIMAL_PLACES -1));
+        result = result.replace(/(\.\d*?)0+(e|$)/, '$1$2');
+        result = result.replace(/\.(?=e)/, '');
+        return result;
+    }
+   
+    // Mathematical rounding for internal precision before display formatting.
+    // Addresses floating-point inaccuracies (e.g., 0.1 + 0.2).
+
+    const factor = Math.pow(10, MAX_DECIMAL_PLACES + 2);
+    let roundedNumber = Math.round(factor * number) / factor;
+    let formattedString = String(roundedNumber);
+
+    // Final check: If the formatted string is still too long for the display.
+    // This catches numbers with large integer parts that were not caught by the exponential check.
+    if(formattedString.length > MAX_DISPLAY_LENGTH){
+        
+        let integerParthLength = String(Math.floor(Math.abs(roundedNumber))).length;
+        let decimalPlacesToUse = MAX_DISPLAY_LENGTH - integerParthLength - (formattedString.includes('.') ? 1 : 0);
+        if(decimalPlacesToUse < 0) decimalPlacesToUse = 0;
+
+        return roundedNumber.toFixed(decimalPlacesToUse).replace(/\.?0+$/g, '');
+    }
+
+    // Returns the formatted string if it already fits the display.
+    return roundedNumber.toPrecision(MAX_DECIMAL_PLACES).replace(/\.?0+$/g, '');
 
 };
 
@@ -217,7 +249,7 @@ percentButton.addEventListener("click", () => {
         operator = "";
         shoudResetDisplay = true;
     }
-    
+
     // If operator is '*' or '/', calculate the percentage of currentOperand and multiply/divide
     else if(operator === "*" || operator === "/"){
         currentOperand = (operator === "*") ? String(previousOperand * (currentOperand / 100)) 
@@ -232,7 +264,6 @@ percentButton.addEventListener("click", () => {
 });
 
 document.addEventListener("keydown", (event) => {
-    console.log(event.key);
     if(!isNaN(Number(event.key))){
         appendInput(event.key);
     }
@@ -254,4 +285,3 @@ document.addEventListener("keydown", (event) => {
 });
 
 updateDisplay();
-
