@@ -17,7 +17,7 @@ const backspaceButton = document.querySelector('.backspace-button');
 const percentButton = document.querySelector('.percent-button');
 
 function roundDecimalNumber(number){
-
+    
     // Defines display limits and internal precision for calculations.
     const MAX_DISPLAY_LENGTH = 16;
     const MAX_DECIMAL_PLACES = 12;
