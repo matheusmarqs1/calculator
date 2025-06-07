@@ -71,6 +71,10 @@ function appendInput(input){
     if((currentOperand.includes('.') || currentOperand === "") && input === '.'){
         return;
     }
+    // Prevents number input when there is a previous operand but no operator selected
+    if(previousOperand !== "" && operator === ""){
+        return;
+    }
     currentOperand += input;
     updateDisplay(); 
 };
@@ -97,7 +101,7 @@ function operate(previousOperand, operator, currentOperand){
             return number1 * number2;
 
         case "/":
-            return (number2 !== 0) ? number1 / number2 : "LMAO";
+            return (number2 !== 0) ? number1 / number2 : "UNDEFINED";
             
         default:
             return "This operator is not present in the calculator!";
@@ -107,7 +111,7 @@ function operate(previousOperand, operator, currentOperand){
 };
 
 function handleDivisionByZeroError(value){
-    if(typeof(value) === "string" && value.includes("LMAO")){
+    if(typeof(value) === "string" && value.includes("UNDEFINED")){
         currentOperandTextElement.textContent = value;
         clearOperation();
         shoudResetDisplay = true;
