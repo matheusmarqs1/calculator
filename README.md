@@ -20,7 +20,7 @@ A sleek, responsive, and robust web calculator built with HTML, CSS, and JavaScr
     * **Exponential Notation**: Automatically switches to scientific (exponential) notation (`e+`) for very large or very small numbers to ensure readability and fit the display.
     * **Clean Output**: Removes unnecessary trailing zeros for a polished look.
 * **Robust Error Handling**:
-    * Detects and displays "LMAO" for division by zero, resetting the calculator to prevent further invalid operations.
+    * Detects and displays "UNDEFINED" for division by zero, resetting the calculator to prevent further invalid operations.
     * Prevents incomplete operations from being executed.
 * **Backspace Functionality**: Easily correct input by removing the last digit or operator.
 * **Clear All**: Reset the calculator to its initial state.
